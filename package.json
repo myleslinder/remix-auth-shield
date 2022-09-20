@@ -1,0 +1,88 @@
+{
+	"name": "n-ame",
+	"version": "0.0.1",
+	"description": "",
+	"main": "dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.mjs"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"packageManager": "pnpm@7.11.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/myleslinder/..."
+	},
+	"homepage": "https://github.com/myleslinder/...",
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsup",
+		"format": "prettier --write .",
+		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
+		"typecheck": "tsc -b",
+		"prepublishOnly": "pnpm run build",
+		"test": "vitest",
+		"coverage": "vitest run --coverage",
+		"e2e": "playwright test",
+		"e2e:report": "playwright show-report",
+		"run-script": "pnpm dlx tsx",
+		"patch-version": "pnpm patch",
+		"update:check": "pnpm dlx taze --major"
+	},
+	"tsup": {
+		"entry": [
+			"src/index.ts"
+		],
+		"splitting": false,
+		"sourcemap": false,
+		"format": [
+			"esm",
+			"cjs"
+		]
+	},
+	"pnpm": {
+		"peerDependencyRules": {
+			"allowedVersions": {
+				"vite": "3"
+			}
+		}
+	},
+	"peerDependencies": {
+		"@remix-run/server-runtime": "*",
+		"remix-auth": "^3.3.0"
+	},
+	"devDependencies": {
+		"@remix-run/node": "^1.7.0",
+		"@remix-run/react": "^1.7.0",
+		"@remix-run/server-runtime": "*",
+		"@myleslinder/prettier-config": "^0.0.1",
+		"@types/react": "^18.0.20",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"remix-auth": "^3.3.0",
+		"@playwright/test": "^1.25.2",
+		"@types/node": "^18.7.18",
+		"@typescript-eslint/eslint-plugin": "^5.8.1",
+		"@typescript-eslint/parser": "^5.8.1",
+		"@vitest/coverage-c8": "^0.23.2",
+		"eslint": "^8.5.0",
+		"eslint-config-prettier": "^8.5.0",
+		"happy-dom": "^6.0.4",
+		"prettier": "2.7.1",
+		"tsup": "^6.2.3",
+		"typescript": "^4.8.2",
+		"vite": "^3.0.7",
+		"vite-tsconfig-paths": "^3.5.0",
+		"vitest": "^0.22.0"
+	},
+	"keywords": [],
+	"author": "Myles Linder",
+	"license": "MIT"
+}

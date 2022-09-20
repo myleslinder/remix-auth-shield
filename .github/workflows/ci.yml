@@ -1,0 +1,126 @@
+name: 🚀 CI
+on:
+  push:
+    branches: [main, staging]
+    paths: ["e2e/**", "src/**", "test/**"]
+  pull_request:
+    branches: [main, staging]
+    paths: ["e2e/**", "src/**", "test/**"]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cache-and-install:
+    name: 💾
+    uses: ./.github/workflows/install.yml
+
+  lint:
+    name: ⬣ ESLint
+    needs: cache-and-install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7.11.0 #${{ needs.cache-and-install.outputs.pnpm }}
+          run_install: false
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ needs.cache-and-install.outputs.node }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm i
+
+      - name: 🔬 Lint
+        run: pnpm lint
+
+  typecheck:
+    name: ʦ TypeScript
+    needs: cache-and-install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7.11.0 #${{ needs.cache-and-install.outputs.pnpm }}
+          run_install: false
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ needs.cache-and-install.outputs.node }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm i
+
+      - name: 🔎 Type check
+        run: pnpm typecheck
+
+  vitest:
+    name: ⚡ Vitest
+    needs: cache-and-install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.0.1
+        id: pnpm-install
+        with:
+          version: 7.11.0 #${{ needs.cache-and-install.outputs.pnpm }}
+          run_install: false
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ needs.cache-and-install.outputs.node }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm i
+
+      - name: ⚡ Run vitest
+        run: pnpm test
+
+  build:
+    name: 🏗
+    needs: [cache-and-install, lint, typecheck, vitest]
+    uses: ./.github/workflows/build.yml
+    with:
+      node_version: ${{ needs.cache-and-install.outputs.node }}
+      pnpm_version: 7.11.0 #${{ needs.cache-and-install.outputs.pnpm }}
+      artifact_dir: extension/dist
+
+  playwright:
+    name: 🎭
+    needs: [build]
+    uses: ./.github/workflows/playwright.yml
+    with:
+      node_version: ${{ needs.cache-and-install.outputs.node }}
+      pnpm_version: 7.11.0 #${{ needs.cache-and-install.outputs.pnpm }}
+      artifact_dir: extension/dist

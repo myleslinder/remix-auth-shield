@@ -1,0 +1,61 @@
+name: 🏗 Build
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        required: true
+        type: string
+      pnpm_version:
+        required: true
+        type: string
+      artifact_dir:
+        required: true
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_dir: ${{ steps.artifact-dir.outputs.artifact_dir }}
+
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.0.1
+        id: pnpm-install
+        with:
+          version: ${{ inputs.pnpm_version }}
+          run_install: false
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm i
+
+      - name: Build
+        run: pnpm build
+
+      - name: ⬆️ Upload Build Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: ${{ github.workspace }}/${{ inputs.artifact_dir }}
+
+      - name: Set artifact_dir
+        id: artifact-dir
+        run: |
+          echo "::set-output name=artifact_dir::${{ inputs.artifact_dir }}"
