@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createCookieSessionStorage } from "@remix-run/node";
 import { LoaderArgs } from "@remix-run/server-runtime";
 import { Authenticator } from "remix-auth";
-import { not, notType, or, Shield } from "~/shield";
+import { not, notType, or, Shield } from "~/index";
 
 type ActionRole = "editor" | "readonly";
 
